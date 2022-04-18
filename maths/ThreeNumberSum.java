@@ -10,71 +10,42 @@ public class ThreeNumberSum {
         int[] input = inputList.stream().mapToInt(i -> i).toArray();
 
         List<Integer[]> result = threeNumberSum(input, targetSum);
+        for (Integer[] triplet: result) {
+            for (Integer value: triplet) {
+                System.out.print(value + " ");
+            }
+            System.out.println();
+        }
     }
 
     public static List<Integer[]> threeNumberSum(int[] array, int targetSum) {
 
+        List<Integer[]> result = new ArrayList<>();
+
+        // Sort the array
         Arrays.sort(array);
-        Set<List<Integer>> result = new HashSet<List<Integer>>();
-
-        for (int i = 0; i < array.length; i++) {
-            int targetSum2 = targetSum-array[i];
-            Integer[] twoSum = twoNumberSum(array, targetSum2, i);
-            if (twoSum != null) {
-                Integer[] threeSum = new Integer[3];
-                threeSum[0] = array[i];
-                threeSum[1] = twoSum[0];
-                threeSum[2] = twoSum[1];
-                Arrays.sort(threeSum);
-                result.add((List<Integer>) Arrays.asList(threeSum));
-            }
-        }
-
-        return toList(result);
-    }
-
-    private static List<Integer[]> toList(Set<List<Integer>> input) {
-        List<Integer[]> result = new ArrayList<Integer[]>();
-        for (List<Integer> triplet : input) {
-            result.add(getIntArray(triplet));
-        }
-        Collections.sort(result, new Comparator<Integer[]>() {
-            public int compare(Integer[] a, Integer[] b) {
-                for (int i = 0; i < a.length; i++) {
-                    if (a[i] != b[i]) {
-                        return a[i].compareTo(b[i]);
+        
+        // Pick one value at a time
+        for (int i =0; i < array.length; i++) {
+            int left = i+1;
+            int right = array.length-1;
+            while(left < right) {
+                if (array[i] + array[left] + array[right] == targetSum) {
+                    Integer[] triplet = new Integer[]{array[i], array[left], array[right]};
+                    result.add(triplet);
+                    right--;
+                } else {
+                    if (array[left] + array[right] > targetSum-array[i]) {
+                        right--;
+                    } else {
+                        left++;
                     }
                 }
-                
-                return 0;
             }
-        });
+        }
+
         return result;
     }
 
-    private static Integer[] getIntArray(List<Integer> input) {
-        Integer[] result = new Integer[input.size()];
-        for (int i = 0; i < input.size(); i++) {
-            result[i] = input.get(i);
-        }
-        return result;
-    }
-
-    private static Integer[] twoNumberSum(int[] array, int targetSum, int indexToIgnore) {
-        HashSet<Integer> visited = new HashSet<>();
-
-        for (int j = 0; j < array.length; j++) {
-            if (j == indexToIgnore) {
-                continue;
-            }
-            if (visited.contains(targetSum-array[j])) {
-                Integer[] result = new Integer[2];
-                result[0] = array[j];
-                result[1] = targetSum-array[j];
-                return result;
-            }
-            visited.add(array[j]);
-        }
-        return null;
-    }
+    
 }
